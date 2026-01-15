@@ -98,14 +98,15 @@ test('update an article', async ({ request }) => {
 
   expect(updateResponse.status()).toBe(200);
   const updateResponseBody = await updateResponse.json();
+  
   expect(updateResponseBody.article.title).toBe(updatedArticle.article.title);
   expect(updateResponseBody.article.body).toBe(updatedArticle.article.body);
   expect(updateResponseBody.article.tagList).toEqual(expect.arrayContaining(['Updated', 'Test']));
 
-  // Clean up by deleting the article
   const deleteResponse = await request.delete(`${process.env.API_BASE_URL}/articles/${articleSlug}`);
   const allArticles = await request.get(`${process.env.API_BASE_URL}/articles?limit=100&offset=0`);
   const allArticlesBody = await allArticles.json();
   const articleExists = allArticlesBody.articles.some((article: any) => article.slug === articleSlug);
+
   expect(articleExists).toBeFalsy();
 });

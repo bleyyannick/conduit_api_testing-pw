@@ -8,16 +8,8 @@ import process from 'process'
 const authFile = '.auth/user.json'
 
 
-setup('setup', async ({ page, request }) => { 
-  // await page.goto('https://conduit.bondaracademy.com/');
-  // await page.locator('a.nav-link').getByText('Sign in').click();
-  // await page.getByPlaceholder('Email').fill('yussuf@gmail.com');
-  // await page.getByPlaceholder('Password').fill('yannick92');
-  // await page.getByRole('button', { name: 'Sign in' }).click();
-
-  // await page.waitForResponse("https://conduit-api.bondaracademy.com/api/tags");
-  // await page.context().storageState({ path: authFile });
-
+setup('setup', async ({ request }) => { 
+  
    const response = await request.post('https://conduit-api.bondaracademy.com/api/users/login', {
     data: { 
         "user": {
@@ -27,7 +19,6 @@ setup('setup', async ({ page, request }) => {
   });
   
   const responseBody = await response.json();
-  console.log(responseBody);
   if (response.status() !== 200) {
     console.error("Erreur API :", response.status(), responseBody);
 }

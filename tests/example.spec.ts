@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test.beforeAll(async () => {
-  // JUST to check that env variables are loaded
-  console.log('API Base URL:', process.env.API_BASE_URL);
-  console.log('Access Token:', process.env.ACCESS_TOKEN);
 });
 
 test('get tags', async ({ request }) => {

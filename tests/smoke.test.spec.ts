@@ -1,9 +1,7 @@
-import { test } from '@playwright/test';
-import { RequestHandler } from '../utils/request-handler';
+import { test } from '../utils/fixtures';
 
-test('smoke test for getting tags', async ({  }) => {
-  const api = new RequestHandler()
-    .url('https://conduit-api.bondaracademy.com')
+test('smoke test for getting tags', async ({ api }) => {
+  api
     .path('/articles')
     .params({ limit: 5, offset: 0 })
     .headers({

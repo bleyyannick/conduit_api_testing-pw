@@ -2,6 +2,7 @@ export class RequestHandler {
 
    private baseUrl: string =''
    private apiPath: string =''
+   private defaultURL: string = 'https://conduit-api.bondaracademy.com/api';
    private apiHeaders: Record<string, string> = {};
    private bodyData: any = null;
    private queryParams: Record<string, string | number | boolean> = {};
@@ -30,4 +31,12 @@ export class RequestHandler {
         this.apiPath = path;
         return this;
     }
+
+    private getURL(): string {
+        const url = new URL(`${this.baseUrl || this.defaultURL}${this.apiPath}`);
+        Object.entries(this.queryParams).forEach(([key, value]) => {
+            url.searchParams.append(key, String(value));
+        });
+        return url.toString();
+    };
 }

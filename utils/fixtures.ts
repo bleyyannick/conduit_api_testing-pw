@@ -6,8 +6,8 @@ type RequestFixtures = {
 }
 
 export const test = base.extend<RequestFixtures>({
-    api: async ({ }, use) => {
-        const requestHandler  = new RequestHandler()
+    api: async ({ request}, use) => {
+        const requestHandler  = new RequestHandler(request, process.env.API_BASE_URL || '');
         await use(requestHandler);     
     }
 })

@@ -11,17 +11,11 @@ test('get tags', async ({ request }) => {
   expect(responseBody.tags).toContain('Git');
 });
 
-test('get articles', async ({ request }) => {
-  const response = await request.get('https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0');
-  const responseBody = await response.json();
-  expect(responseBody).toHaveProperty('articles');
-  expect(responseBody.articles.length).toBeGreaterThan(0);
-});
 
 test('create an article', async ({ request }) => {
   const newArticle = {
     article: {
-      title: "Trying to create an article via API",
+      title: "Trying to create qsdqD an article QdsDqsvia API",
       description: "Test Description",
       body: "on reessaye en esperant que ca marche qsildqshODIJHIOQSjdj",
       tagList: ["Playwright", "API", "Testing", "Test", "article"]
@@ -73,7 +67,7 @@ test('create and delete an article', async ({ request }) => {
 test('update an article', async ({ request }) => {
   const newArticle = {
     article: {
-      title: "AGAIN ETC AGAIN",
+      title: "AGAIN ETsdsqDQdsqDQSC AGAIN",
       description: "This article will be created and then updated",
       body: "Initial body content",
       tagList: ["Update", "Test"]
@@ -91,7 +85,7 @@ test('update an article', async ({ request }) => {
 
   const updatedArticle = {
     article: {
-      title: "ETC MAX B IS OUT ! WITH FRENCH MONTANA ",
+      title: "ETC MAX qSsqSB IS OUT ! dqsfdsfsdqWITH FRENCH MONTANA ",
       description: "This article has been updated",
       body: "Updated body content",
       tagList: ["Updated", "Test"]

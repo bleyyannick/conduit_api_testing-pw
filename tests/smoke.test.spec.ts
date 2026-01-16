@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from '../utils/fixtures';
+import { APILogger } from '../utils/logger';
 
 test('smoke test for getting tags', async ({ api }) => {
   const response = await api
@@ -11,6 +12,14 @@ test('smoke test for getting tags', async ({ api }) => {
   expect(response.tags.length).toBeGreaterThan(0);
   expect(response.tags).toContain('Test');
 
+});
+
+test('logging something', async ({}) => {
+   const logger = new APILogger();
+    logger.logRequest('GET', 'https://api.example.com/tags', {'Accept': 'application/json'});
+    logger.logResponse(200, 'https://api.example.com/tags', {'Content-Type': 'application/json'}, {tags: ['Test', 'Smoke', 'API']});
+    const logs = logger.getRecentLogs();
+    expect(logs.length).toBe(2);
 });
 
 test('smoke test for getting articles', async ({ api }) => {

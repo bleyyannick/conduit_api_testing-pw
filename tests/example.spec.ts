@@ -15,7 +15,7 @@ test('get tags', async ({ request }) => {
 test('create an article', async ({ request }) => {
   const newArticle = {
     article: {
-      title: "Trying to create qsdqD an article QdsDqsvia API",
+      title: "Trying to create AN NTH ARTICLE API",
       description: "Test Description",
       body: "on reessaye en esperant que ca marche qsildqshODIJHIOQSjdj",
       tagList: ["Playwright", "API", "Testing", "Test", "article"]
@@ -67,7 +67,7 @@ test('create and delete an article', async ({ request }) => {
 test('update an article', async ({ request }) => {
   const newArticle = {
     article: {
-      title: "AGAIN ETsdsqDQdsqDQSC AGAIN",
+      title: "AGAIN AGAIN STOP qsdqD an article QdsDqsvia API",
       description: "This article will be created and then updated",
       body: "Initial body content",
       tagList: ["Update", "Test"]
@@ -85,7 +85,7 @@ test('update an article', async ({ request }) => {
 
   const updatedArticle = {
     article: {
-      title: "ETC MAX qSsqSB IS OUT ! dqsfdsfsdqWITH FRENCH MONTANA ",
+      title: "ETC FRENCH MONTANA ",
       description: "This article has been updated",
       body: "Updated body content",
       tagList: ["Updated", "Test"]

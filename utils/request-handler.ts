@@ -1,4 +1,5 @@
 import { APIRequestContext, expect } from "@playwright/test";
+import { APILogger } from "./logger";
 
 export class RequestHandler {
 
@@ -8,12 +9,14 @@ export class RequestHandler {
    private defaultURL: string = '';
    private apiHeaders: Record<string, string> = {};
    private bodyData: any = null;
+   private logger: APILogger;
    private queryParams: Record<string, string | number | boolean> = {};
 
 
-   constructor( request: APIRequestContext, apiBaseUrl: string) {
+   constructor( request: APIRequestContext, apiBaseUrl: string, logger: APILogger) {
          this.request = request;
          this.defaultURL = apiBaseUrl;
+         this.logger = logger;
    }
    
     url(url: string) {
@@ -40,13 +43,16 @@ export class RequestHandler {
         this.apiPath = path;
         return this;
     }
+    
 
     async get(statusCode: number = 200) {
         const url = this.getURL();
+        this.logger.logRequest('GET', url, this.apiHeaders);
         const response = await this.request.get(url, {
             headers: this.apiHeaders
         });
         const responseBody = await response.json();
+        this.logger.logResponse(response.status(), url, this.apiHeaders, responseBody);
         expect(response.status()).toBe(statusCode);
         return responseBody;
         
@@ -54,31 +60,37 @@ export class RequestHandler {
 
     async post(statusCode: number = 201) {
         const url = this.getURL();
+        this.logger.logRequest('POST', url, this.apiHeaders, this.bodyData);
         const response = await this.request.post(url, {
             headers: this.apiHeaders,
             data: this.bodyData
         });
         const responseBody = await response.json();
+        this.logger.logResponse(response.status(), url, this.apiHeaders, responseBody);
         expect(response.status()).toBe(statusCode);
         return responseBody;
     }
 
     async put(statusCode: number = 200) {
         const url = this.getURL();
+        this.logger.logRequest('PUT', url, this.apiHeaders, this.bodyData);
         const response = await this.request.put(url, {
             headers: this.apiHeaders,
             data: this.bodyData
         });
         const responseBody = await response.json();
+        this.logger.logResponse(response.status(), url, this.apiHeaders, responseBody);
         expect(response.status()).toBe(statusCode);
         return responseBody;
     }
 
     async delete(statusCode: number = 204) {
         const url = this.getURL();
+        this.logger.logRequest('DELETE', url, this.apiHeaders);
         const response = await this.request.delete(url, {
             headers: this.apiHeaders
         });
+        this.logger.logResponse(response.status(), url, this.apiHeaders);
         expect(response.status()).toBe(statusCode);
         return;
     }
@@ -91,4 +103,14 @@ export class RequestHandler {
         });
         return url.toString();
     };
+
+
+    private statusCodeValidator(responseStatus: number, expectedStatus: number) {
+        expect(responseStatus).toBe(expectedStatus);
+        if (responseStatus !== expectedStatus) {
+            this.logger.getRecentLogs();
+            throw new Error(`Expected status code ${expectedStatus}, but got ${responseStatus}`);
+        }
+        
+    }
 }

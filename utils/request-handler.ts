@@ -52,8 +52,9 @@ export class RequestHandler {
             headers: this.apiHeaders
         });
         const responseBody = await response.json();
-        this.logger.logResponse(response.status(), url, this.apiHeaders, responseBody);
-        expect(response.status()).toBe(statusCode);
+        const currentStatusCode = response.status();
+        this.logger.logResponse(currentStatusCode, url, this.apiHeaders, responseBody);
+        this.statusCodeValidator(currentStatusCode, statusCode, this.get);
         return responseBody;
         
     }
@@ -66,8 +67,9 @@ export class RequestHandler {
             data: this.bodyData
         });
         const responseBody = await response.json();
-        this.logger.logResponse(response.status(), url, this.apiHeaders, responseBody);
-        expect(response.status()).toBe(statusCode);
+        const currentStatusCode = response.status();
+        this.logger.logResponse(currentStatusCode, url, this.apiHeaders, responseBody);
+        this.statusCodeValidator(currentStatusCode, statusCode, this.post);
         return responseBody;
     }
 
@@ -79,8 +81,9 @@ export class RequestHandler {
             data: this.bodyData
         });
         const responseBody = await response.json();
-        this.logger.logResponse(response.status(), url, this.apiHeaders, responseBody);
-        expect(response.status()).toBe(statusCode);
+        const currentStatusCode = response.status();
+        this.logger.logResponse(currentStatusCode, url, this.apiHeaders, responseBody);
+        this.statusCodeValidator(currentStatusCode, statusCode, this.put);
         return responseBody;
     }
 
@@ -90,8 +93,9 @@ export class RequestHandler {
         const response = await this.request.delete(url, {
             headers: this.apiHeaders
         });
-        this.logger.logResponse(response.status(), url, this.apiHeaders);
-        expect(response.status()).toBe(statusCode);
+        const currentStatusCode = response.status();
+        this.logger.logResponse(currentStatusCode, url, this.apiHeaders);
+        this.statusCodeValidator(currentStatusCode, statusCode, this.delete);
         return;
     }
 
@@ -105,11 +109,13 @@ export class RequestHandler {
     };
 
 
-    private statusCodeValidator(responseStatus: number, expectedStatus: number) {
+    private statusCodeValidator(responseStatus: number, expectedStatus: number, method: Function) {
         expect(responseStatus).toBe(expectedStatus);
         if (responseStatus !== expectedStatus) {
             this.logger.getRecentLogs();
-            throw new Error(`Expected status code ${expectedStatus}, but got ${responseStatus}`);
+            const error = new Error(`Expected status code ${expectedStatus}, but got ${responseStatus}`);
+            Error.captureStackTrace(error, method)
+            throw error;
         }
         
     }

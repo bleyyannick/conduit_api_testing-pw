@@ -1,112 +1,125 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from '../utils/fixtures';
 
 test.beforeAll(async () => {
 });
 
-test('get tags', async ({ request }) => {
-  const response = await request.get('https://conduit-api.bondaracademy.com/api/tags');
-  const responseBody = await response.json();
-  expect(response.status()).toBe(200);
-  expect(responseBody).toHaveProperty('tags');
-  expect(responseBody.tags).toContain('Git');
+test('get tags', async ({ api }) => {
+  const response = await api
+    .url(`${process.env.API_BASE_URL}/tags`)
+    .get(200);
+  
+  expect(response).toHaveProperty('tags');
+  expect(response.tags).toContain('Git');
 });
 
 
-test('create an article', async ({ request }) => {
+test('create an article', async ({ api }) => {
   const newArticle = {
     article: {
-      title: "Trying to create AN NTH ARTICLE API",
+      title: "LAST TRY THEN I GIVE UP",
       description: "Test Description",
       body: "on reessaye en esperant que ca marche qsildqshODIJHIOQSjdj",
       tagList: ["Playwright", "API", "Testing", "Test", "article"]
     }
   };
 
-  const response = await request.post(`${process.env.API_BASE_URL}/articles`, {
-    data: newArticle
-  });
+  const response = await api
+    .url(`${process.env.API_BASE_URL}/articles`)
+    .body(newArticle)
+    .post(201)
 
-  expect(response.status()).toBe(201);
-  const responseBody = await response.json();
-  expect(responseBody.article.tagList).toContain('Test');
-  expect(responseBody.article.tagList).toContain('article');
+    expect(response.article.tagList).toContain('Test');
+    expect(response .article.tagList).toContain('article');
+
+  const deleteResponse = await api
+    .url(`${process.env.API_BASE_URL}/articles/${response.article.slug}`)
+    .delete(204);
 });
 
-test('create and delete an article', async ({ request }) => {
-  // Create an article
+test('create and delete an article', async ({ api }) => {
+
   const newArticle = {
     article: {
-      title: "No problem for this test",
+      title: "another one Test of creating an article to delete via API",
       description: "This article will be created and then deleted",
       body: "Test body for create and delete operation",
       tagList: ["Test", "delete"]
     }
   };
 
-  const createResponse = await request.post(`${process.env.API_BASE_URL}/articles`, {
-    data: newArticle
-  });
+  const createResponse = await api
+    .url(`${process.env.API_BASE_URL}/articles`)
+    .body(newArticle)
+    .post(201);
 
-  expect(createResponse.status()).toBe(201);
-  const createResponseBody = await createResponse.json();
-  expect(createResponseBody.article).toHaveProperty('slug');
-  expect(createResponseBody.article.title).toBe(newArticle.article.title);
-  expect(createResponseBody.article.body).toBe(newArticle.article.body);
-  expect(createResponseBody.article.tagList).toEqual(expect.arrayContaining(['Test', 'delete']));
 
-  const articleSlug = createResponseBody.article.slug;
+  expect(createResponse.article).toHaveProperty('slug');
+  expect(createResponse.article.title).toBe(newArticle.article.title);
+  expect(createResponse.article.body).toBe(newArticle.article.body);
+  expect(createResponse.article.tagList).toEqual(expect.arrayContaining(['Test', 'delete']));
+
+  const articleSlug = createResponse.article.slug;
   console.log(`Article created with slug: ${articleSlug}`);
 
-  const deleteResponse = await request.delete(`${process.env.API_BASE_URL}/articles/${articleSlug}`, {
-  });
-  expect(deleteResponse.status()).toBe(204);
-  const getResponse = await request.get(`${process.env.API_BASE_URL}/articles/${articleSlug}`);
-  expect(getResponse.status()).toBe(404);
+  const deleteResponse = await api
+      .url(`${process.env.API_BASE_URL}/articles/${articleSlug}`)
+      .delete(204);
+
+  const getResponse = await api
+      .url(`${process.env.API_BASE_URL}/articles/${articleSlug}`)
+      .get(404);
 });
 
-test('update an article', async ({ request }) => {
+test('update an article', async ({ api }) => {
   const newArticle = {
     article: {
-      title: "AGAIN AGAIN STOP qsdqD an article QdsDqsvia API",
+      title: " KLSJQFHBNJKLSQfkljqkmdsjkfmkjmI",
       description: "This article will be created and then updated",
       body: "Initial body content",
       tagList: ["Update", "Test"]
     }
   };
 
-  const createResponse = await request.post(`${process.env.API_BASE_URL}/articles`, {
-    data: newArticle
-  });
+  const createResponse = await api
+    .url(`${process.env.API_BASE_URL}/articles`)
+    .body(newArticle)
+    .post(201);
 
-  expect(createResponse.status()).toBe(201);
-  const createResponseBody = await createResponse.json();
-  const articleSlug = createResponseBody.article.slug;
+    const articleSlug = createResponse.article.slug;
 
 
   const updatedArticle = {
     article: {
-      title: "ETC FRENCH MONTANA ",
+      title: "BOWAAAAH ",
       description: "This article has been updated",
       body: "Updated body content",
       tagList: ["Updated", "Test"]
     }
   };
 
-  const updateResponse = await request.put(`${process.env.API_BASE_URL}/articles/${articleSlug}`, {
-    data: updatedArticle
-  });
-
-  expect(updateResponse.status()).toBe(200);
-  const updateResponseBody = await updateResponse.json();
+  const updateResponse = await api
+   .url(`${process.env.API_BASE_URL}/articles/${articleSlug}`)
+   .body(updatedArticle)
+   .put(200);
   
-  expect(updateResponseBody.article.title).toBe(updatedArticle.article.title);
-  expect(updateResponseBody.article.body).toBe(updatedArticle.article.body);
-  expect(updateResponseBody.article.tagList).toEqual(expect.arrayContaining(['Updated', 'Test']));
+  expect(updateResponse.article.title).toBe(updatedArticle.article.title);
+  expect(updateResponse.article.body).toBe(updatedArticle.article.body);
+  expect(updateResponse.article.tagList).toEqual(expect.arrayContaining(['Updated', 'Test']));
 
-  const deleteResponse = await request.delete(`${process.env.API_BASE_URL}/articles/${articleSlug}`);
-  const allArticles = await request.get(`${process.env.API_BASE_URL}/articles?limit=100&offset=0`);
-  const allArticlesBody = await allArticles.json();
-  const articleExists = allArticlesBody.articles.some((article: any) => article.slug === articleSlug);
+  const updateSlug = updateResponse.article.slug;
+
+  const deleteResponse = await api
+    .url(`${process.env.API_BASE_URL}/articles/${updateSlug}`)
+    .delete(204);
+
+  const allArticles = await api
+    .url(`${process.env.API_BASE_URL}/articles`)
+    .params({ limit: 10, offset: 0 })
+    .get(200);
+
+  const allArticlesBody = allArticles;
+  const articleExists = allArticlesBody.articles.some((article: any) => article.slug === updateSlug);
 
   expect(articleExists).toBeFalsy();
 });

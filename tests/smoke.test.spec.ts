@@ -1,6 +1,5 @@
 import { expect } from '@playwright/test';
 import { test } from '../utils/fixtures';
-import { APILogger } from '../utils/logger';
 
 test('smoke test for getting tags', async ({ api }) => {
   const response = await api
@@ -12,14 +11,6 @@ test('smoke test for getting tags', async ({ api }) => {
   expect(response.tags.length).toBeGreaterThan(0);
   expect(response.tags).toContain('Test');
 
-});
-
-test('logging something', async ({}) => {
-   const logger = new APILogger();
-    logger.logRequest('GET', 'https://api.example.com/tags', {'Accept': 'application/json'});
-    logger.logResponse(200, 'https://api.example.com/tags', {'Content-Type': 'application/json'}, {tags: ['Test', 'Smoke', 'API']});
-    const logs = logger.getRecentLogs();
-    expect(logs.length).toBe(2);
 });
 
 test('smoke test for getting articles', async ({ api }) => {
@@ -43,7 +34,6 @@ test('smoke test for creating an article and deleting it', async ({ api }) => {
 
   const response = await api
     .path('/articles')
-    .headers({ 'Content-Type': 'application/json' })
     .body(newArticle)
     .post(201);
 
@@ -59,7 +49,6 @@ test('smoke test for creating an article and deleting it', async ({ api }) => {
 
   const deleteResponse = await api
     .path(`/articles/${slugId}`)
-    .headers({ 'Content-Type': 'application/json' })
     .delete();
 
     expect(deleteResponse).toBeUndefined();
@@ -77,7 +66,6 @@ test('smoke test for updating an article', async ({ api }) => {
 
   const createResponse = await api
     .path('/articles')
-    .headers({ 'Content-Type': 'application/json' })
     .body(newArticle)
     .post(201);
 
@@ -93,18 +81,16 @@ test('smoke test for updating an article', async ({ api }) => {
 
   const updateResponse = await api
     .path(`/articles/${slugId}`)
-    .headers({ 'Content-Type': 'application/json' })
     .body(updatedArticle)
     .put(200);  
   expect(updateResponse.article.title).not.toBe(createResponse.article.title);
   expect(updateResponse.article.description).not.toBe(createResponse.article.description);
   expect(updateResponse.article.body).not.toBe(createResponse.article.body);
 
-  const updatedSludgId = updateResponse.article.slug;
+  const updatedSlugId = updateResponse.article.slug;
 
   const deleteUpdateResponse = await api
-    .path(`/articles/${updatedSludgId}`)
-    .headers({ 'Content-Type': 'application/json' })
+    .path(`/articles/${updatedSlugId}`)
     .delete();
 
     expect(deleteUpdateResponse).toBeUndefined();

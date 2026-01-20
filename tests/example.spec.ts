@@ -1,9 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from '../utils/fixtures';
 
-test.beforeAll(async () => {
-});
-
 test('get tags', async ({ api }) => {
   const response = await api
     .url(`${process.env.API_BASE_URL}/tags`)

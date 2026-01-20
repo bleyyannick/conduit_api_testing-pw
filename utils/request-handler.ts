@@ -2,7 +2,7 @@ import { APIRequestContext, expect } from "@playwright/test";
 import { APILogger } from "./logger";
 
 export class RequestHandler {
-
+    
    private request: APIRequestContext;
    private baseUrl: string =''
    private apiPath: string =''
@@ -51,6 +51,7 @@ export class RequestHandler {
         const response = await this.request.get(url, {
             headers: this.apiHeaders
         });
+        this.clearFields();
         const responseBody = await response.json();
         const currentStatusCode = response.status();
         this.logger.logResponse(currentStatusCode, url, this.apiHeaders, responseBody);
@@ -66,6 +67,7 @@ export class RequestHandler {
             headers: this.apiHeaders,
             data: this.bodyData
         });
+        this.clearFields();
         const responseBody = await response.json();
         const currentStatusCode = response.status();
         this.logger.logResponse(currentStatusCode, url, this.apiHeaders, responseBody);
@@ -80,6 +82,7 @@ export class RequestHandler {
             headers: this.apiHeaders,
             data: this.bodyData
         });
+        this.clearFields();
         const responseBody = await response.json();
         const currentStatusCode = response.status();
         this.logger.logResponse(currentStatusCode, url, this.apiHeaders, responseBody);
@@ -93,6 +96,7 @@ export class RequestHandler {
         const response = await this.request.delete(url, {
             headers: this.apiHeaders
         });
+        this.clearFields();
         const currentStatusCode = response.status();
         this.logger.logResponse(currentStatusCode, url, this.apiHeaders);
         this.statusCodeValidator(currentStatusCode, statusCode, this.delete);
@@ -118,5 +122,12 @@ export class RequestHandler {
             throw error;
         }
         
+    }
+
+    private clearFields() {
+        this.apiPath = '';
+        this.apiHeaders = {};
+        this.bodyData = null;
+        this.queryParams = {};
     }
 }

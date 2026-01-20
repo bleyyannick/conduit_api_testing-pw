@@ -1,30 +1,23 @@
-import { test as setup, expect } from '@playwright/test'
 import fs from 'fs'
 import user from '../.auth/user.json'
 import process from 'process'
-
-
+import { test } from '../utils/fixtures'
 
 const authFile = '.auth/user.json'
 
-
-setup('setup', async ({ request }) => { 
-  
-   const response = await request.post('https://conduit-api.bondaracademy.com/api/users/login', {
-    data: { 
+test('setup', async ({ api }) => { 
+   const response = await api
+    .url('https://conduit-api.bondaracademy.com/api/users/login')
+    .body(
+      {
         "user": {
             "email": process.env.EMAIL,
-            "password": process.env.PASSWORD
-     }}
-  });
-  
-  const responseBody = await response.json();
-  if (response.status() !== 200) {
-    console.error("Erreur API :", response.status(), responseBody);
- }
+            "password": process.env.PASSWORD }}
+      )
+    .post(200);
 
-  expect(response.status()).toBe(200);
-  const token = responseBody.user.token;
+
+  const token = response.user.token;
   user.origins[0].localStorage[0].value = token;
   fs.writeFileSync(authFile, JSON.stringify(user));
   process.env['ACCESS_TOKEN'] = token; 

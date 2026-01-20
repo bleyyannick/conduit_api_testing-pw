@@ -1,10 +1,12 @@
 import { expect } from '@playwright/test';
 import { test } from '../utils/fixtures';
+import { validateSchema } from '../utils/schema-validator';
 
 test('get tags', async ({ api }) => {
   const response = await api
     .url(`${process.env.API_BASE_URL}/tags`)
     .get(200);
+    await validateSchema('tags', 'GET_tags', response);
   
   expect(response).toHaveProperty('tags');
   expect(response.tags).toContain('Git');

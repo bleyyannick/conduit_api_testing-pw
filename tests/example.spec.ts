@@ -28,10 +28,10 @@ test('create an article', async ({ api }) => {
     .body(newArticle)
     .post(201)
 
-    expect(response.article.tagList).toContain('Test');
-    expect(response .article.tagList).toContain('article');
+  expect(response.article.tagList).toContain('Test');
+  expect(response.article.tagList).toContain('article');
 
-  const deleteResponse = await api
+  await api
     .url(`${process.env.API_BASE_URL}/articles/${response.article.slug}`)
     .delete(204);
 });
@@ -59,13 +59,11 @@ test('create and delete an article', async ({ api }) => {
   expect(createResponse.article.tagList).toEqual(expect.arrayContaining(['Test', 'delete']));
 
   const articleSlug = createResponse.article.slug;
-  console.log(`Article created with slug: ${articleSlug}`);
-
-  const deleteResponse = await api
+  
+  await api
       .url(`${process.env.API_BASE_URL}/articles/${articleSlug}`)
       .delete(204);
-
-  const getResponse = await api
+  await api
       .url(`${process.env.API_BASE_URL}/articles/${articleSlug}`)
       .get(404);
 });
@@ -108,7 +106,7 @@ test('update an article', async ({ api }) => {
 
   const updateSlug = updateResponse.article.slug;
 
-  const deleteResponse = await api
+  await api
     .url(`${process.env.API_BASE_URL}/articles/${updateSlug}`)
     .delete(204);
 
